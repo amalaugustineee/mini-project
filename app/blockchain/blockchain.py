@@ -1,19 +1,20 @@
 import time
 import json
-import os
-import pickle
 from .block import Block
 from .transaction import Transaction
+from app.models.blockchain import BlockchainData
 
 class Blockchain:
     def __init__(self):
         self.chain = []
         self.pending_transactions = []
-        self.mining_reward = 0  # No mining reward in this simulation
-        self.difficulty = 2  # Adjustable difficulty for mining
-        self.blockchain_file = "blockchain_data.pkl"
+        self.mining_reward = 0
+        self.difficulty = 2
         
-        # Create the genesis block if chain is empty
+        # Load blockchain from database
+        self.load_from_database()
+        
+        # Create genesis block if chain is empty
         if len(self.chain) == 0:
             self.create_genesis_block()
     
@@ -23,6 +24,7 @@ class Blockchain:
         """
         genesis_block = Block(0, time.time(), [], "0")
         self.chain.append(genesis_block)
+        self.save_to_database(genesis_block)
         print("Genesis block created.")
         
     def get_latest_block(self):
@@ -60,8 +62,8 @@ class Blockchain:
         self.chain.append(block)
         self.pending_transactions = []
         
-        # Save blockchain to file
-        self.save_to_file()
+        # Save block to database
+        self.save_to_database(block)
         
         return block
     
@@ -136,23 +138,42 @@ class Blockchain:
                     
         return spending
         
-    def save_to_file(self):
+    def save_to_database(self, block):
         """
-        Save the blockchain to a file
+        Save a block to the database
         """
-        with open(self.blockchain_file, 'wb') as f:
-            pickle.dump(self, f)
+        from app import db
+        block_data = BlockchainData.from_dict(block.to_dict())
+        db.session.add(block_data)
+        db.session.commit()
             
-    @staticmethod
-    def load_from_file():
+    def load_from_database(self):
         """
-        Load the blockchain from a file
+        Load the blockchain from the database
         """
-        try:
-            with open("blockchain_data.pkl", 'rb') as f:
-                return pickle.load(f)
-        except (FileNotFoundError, EOFError):
-            return Blockchain()
+        from app import db
+        blocks = BlockchainData.query.order_by(BlockchainData.block_index).all()
+        
+        for block_data in blocks:
+            block_dict = json.loads(block_data.block_data)
+            transactions = [
+                Transaction(
+                    tx['sender_id'],
+                    tx['recipient_id'],
+                    tx['amount'],
+                    tx['transaction_type']
+                ) for tx in block_dict['transactions']
+            ]
+            
+            block = Block(
+                block_dict['index'],
+                block_dict['timestamp'],
+                transactions,
+                block_dict['previous_hash'],
+                block_dict['nonce']
+            )
+            block.hash = block_dict['hash']
+            self.chain.append(block)
 
 # Global blockchain instance
 blockchain = None
@@ -162,7 +183,7 @@ def init_blockchain():
     Initialize or load the blockchain
     """
     global blockchain
-    blockchain = Blockchain.load_from_file()
+    blockchain = Blockchain()
     return blockchain
 
 def get_blockchain():

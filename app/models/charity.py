@@ -14,7 +14,7 @@ class Charity(db.Model):
     
     # Authentication fields
     email = db.Column(db.String(120), unique=True)
-    password_hash = db.Column(db.String(128))
+    password_hash = db.Column(db.String(256))
     is_authenticated = db.Column(db.Boolean, default=False)  # For charity login tracking
     
     def __init__(self, name, description, email=None, admin_approved=False):

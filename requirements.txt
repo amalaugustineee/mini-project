@@ -4,4 +4,5 @@ flask-login==0.6.2
 flask-wtf==1.2.1
 werkzeug==2.3.7
 python-dotenv==1.0.0
+psycopg2-binary==2.9.9
 hashlib==20081119 

@@ -115,7 +115,4 @@ def profile():
     # Get all charities for linking in the UI
     charities = Charity.query.filter_by(admin_approved=True).all()
     
-    return render_template('profile.html', 
-                           user=current_user, 
-                           transactions=user_transactions,
-                           charities=charities) 
+    return render_template('profile.html', user=current_user, transactions=user_transactions,charities=charities) 

@@ -29,9 +29,7 @@ def admin_dashboard():
     # Get approved charities
     approved_charities = Charity.query.filter_by(admin_approved=True).all()
     
-    return render_template('admin/dashboard.html',
-                         pending_charities=pending_charities,
-                         approved_charities=approved_charities)
+    return render_template('admin/dashboard.html',pending_charities=pending_charities,approved_charities=approved_charities)
 
 @admin_bp.route('/admin/charity/review/<int:charity_id>', methods=['GET'])
 @login_required

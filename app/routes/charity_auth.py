@@ -94,13 +94,7 @@ def dashboard():
     total_spent = sum(tx.amount for tx in spending_transactions)
     current_balance = total_donations - total_spent
     
-    return render_template('charity_auth/dashboard.html', 
-                           charity=charity,
-                           donations=donations,
-                           spending_transactions=spending_transactions,
-                           total_donations=total_donations,
-                           total_spent=total_spent,
-                           current_balance=current_balance)
+    return render_template('charity_auth/dashboard.html', charity=charity,donations=donations,spending_transactions=spending_transactions,total_donations=total_donations,total_spent=total_spent,current_balance=current_balance)
 
 @charity_auth_bp.route('/charity/spend', methods=['GET', 'POST'])
 @charity_login_required

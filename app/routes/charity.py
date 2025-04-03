@@ -29,9 +29,7 @@ def charity_detail(charity_id):
     blockchain = get_blockchain()
     spending_transactions = blockchain.get_charity_spending(charity.blockchain_address)
     
-    return render_template('charity_detail.html', 
-                           charity=charity,
-                           spending_transactions=spending_transactions)
+    return render_template('charity_detail.html', charity=charity,spending_transactions=spending_transactions)
 
 @charity_bp.route('/donate/<int:charity_id>', methods=['GET', 'POST'])
 @login_required
