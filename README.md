@@ -5,7 +5,7 @@ A blockchain-based platform for transparent charitable donations and spending tr
 ## Features
 
 - User registration and authentication
-- Charity registration and approval system
+- Charity registration and  mm approval system
 - Blockchain-based donation tracking
 - Transparent spending records for charities
 - Admin dashboard for charity management
